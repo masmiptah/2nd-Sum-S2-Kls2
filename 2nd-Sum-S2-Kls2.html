@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<style>
+  @font-face {
+    font-family: 'Recoleta';
+    src: url('Recoleta-RegularDEMO.otf') format('opentype');
+  }
+  #question {
+    font-family: 'Recoleta', serif !important;
+  }
+  .option {
+    font-family: 'Recoleta', serif !important;
+  }
+</style>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pra Summative PAI-BP</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Playfair Display', serif;
+    margin: 0; padding: 0;
+    background: #f0f4f8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+  }
+  #container {
+    width: 95%;
+    max-width: 420px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    padding: 20px 25px;
+    box-sizing: border-box;
+  }
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  /* Judul kecil di bawah h1 */
+  #home p.subtitle {
+    text-align:center;
+    font-size:0.9rem;
+    color:#555;
+    margin-top:-12px;
+    margin-bottom:20px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  input[type="text"]:focus {
+    border-color: #0077cc;
+    outline: none;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: background 0.3s;
+  }
+  button:hover:not(:disabled) {
+    background: #005fa3;
+  }
+  button:disabled {
+    background: #a0c4ff;
+    cursor: not-allowed;
+  }
+  #leaderboardList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  #leaderboardList li {
+    padding: 8px 12px;
+    background: #e2e8f0;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  #quiz, #result {
+    display: none;
+  }
+  #question {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    min-height: 64px;
+  }
+  .option {
+    background: #e0f0ff;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    user-select: none;
+  }
+  .option:hover {
+    background: #b6dbff;
+  }
+  .option.disabled {
+    cursor: default;
+    background: #cbd5e1;
+    color: #718096;
+  }
+  #timer {
+    text-align: right;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: #0077cc;
+  }
+  #timer.blink {
+    animation: blink 1s steps(2, start) infinite;
+    color: red;
+  }
+  @keyframes blink {
+    50% { visibility: hidden; }
+  }
+  /* Score colors */
+  .green { color: #2f855a; }
+  .yellow { color: #d69e2e; }
+  .red { color: #c53030; }
+
+  /* Fade animations */
+  .fade-out {
+    animation: fadeOut 0.5s forwards;
+  }
+  .fade-in {
+    animation: fadeIn 0.5s forwards;
+  }
+  @keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+  <div id="container">
+    <!-- Beranda -->
+    <div id="home">
+      <h1>Pra Summative PAI</h1>
+      <p class="subtitle">Made by Miftah's Family</p>
+      <input type="text" id="playerName" placeholder="Input Your Name" />
+      <button id="startBtn" disabled>Start</button>
+      <button id="leaderboardBtn">Leaderboard</button>
+      <ul id="leaderboardList" style="display:none;"></ul>
+    </div>
+
+    <!-- Kuis -->
+    <div id="quiz">
+      <div id="timer">30</div>
+      <div id="question"></div>
+      <div id="options"></div>
+      <div id="scorePerQuestion" style="text-align:center; margin-top:12px; font-weight:bold;"></div>
+    </div>
+
+    <!-- Hasil -->
+    <div id="result"></div>
+  </div>
+
+<script>
+  const questions = [
+    { q: "Bacaan dzikir yang paling banyak diulang setelah sholat adalah…", a: "B", options: ["Astaghfirullah", "Subhanallah, Alhamdulillah, Allahu Akbar", "Bismillahirrahmanirrahim"] },
+    { q: "Dalam Islam, mengucapkan “Astaghfirullah” setelah sholat bertujuan untuk…", a: "A", options: ["Memohon ampun atas kekurangan dalam sholat", "Meminta rezeki", "Menunjukkan kesombongan"] },
+    { q: "Bacaan dzikir yang mengandung pujian kepada Allah adalah…", a: "B", options: ["Astaghfirullah", "Alhamdulillah", "Laa hawla wa laa quwwata illa billah"] },
+    { q: "Dalam kehidupan sehari-hari, kerjasama dapat menciptakan…", a: "A", options: ["Keharmonisan dan rasa saling percaya", "Kesulitan dan kesalahpahaman", "Perpecahan"] },
+    { q: "Membantu orang yang sedang kesusahan adalah contoh dari sikap…", a: "B", options: ["Takut", "Tolong-menolong", "Egois"] },
+    { q: "Doa masuk kamar mandi diawali dengan bacaan…", a: "A", options: ["Allahumma inni a’udzu bika minal khubutsi wal khaba’its", "Alhamdulillahilladzi", "Rabbighfirli"] },
+    { q: "Bacaan “Laa ilaaha illallah” disebut…", a: "B", options: ["Tasbih", "Tahlil", "Tahmid"] },
+    { q: "Dalam bekerja kelompok, kita harus…", a: "A", options: ["Saling menghargai dan berbagi tugas", "Bersaing satu sama lain", "Diam dan tidak peduli"] },
+    { q: "Doa sebelum belajar bertujuan agar…", a: "B", options: ["Cepat selesai", "Ilmu yang dipelajari bermanfaat", "Guru senang"] },
+    { q: "Bacaan “Subhanallah” diucapkan setelah sholat sebanyak…", a: "C", options: ["11 kali", "99 kali", "33 kali"] },
+    { q: "Orang yang suka menolong tanpa pamrih akan…", a: "A", options: ["Disukai Allah dan sesama", "Dijauhi orang", "Sering dimanfaatkan"] },
+    { q: "Bacaan dzikir “Alhamdulillah” diucapkan setelah sholat untuk…", a: "B", options: ["Menunjukkan kesombongan", "Bersyukur kepada Allah", "Mengeluh atas takdir"] },
+    { q: "Zikir dan doa setelah sholat termasuk dalam bentuk…", a: "B", options: ["Ibadah sunnah yang dianjurkan", "Komunikasi hamba dengan Allah", "Kebiasaan turun-temurun"] },
+    { q: "Kerjasama dalam menyelesaikan tugas dapat melatih…", a: "C", options: ["Ego", "Kemandirian total", "Tanggung jawab dan kebersamaan"] },
+    { q: "Orang yang membantu orang lain saat bencana disebut…", a: "B", options: ["Dermawan", "Relawan", "Pemimpin"] },
+    { q: "Membaca doa dan zikir setelah sholat menunjukkan bahwa kita…", a: "C", options: ["Malas berdoa sendiri", "Ikut-ikutan", "Mengakui kelemahan dan memohon kepada Allah"] },
+    { q: "Contoh sikap tolong-menolong di sekolah adalah…", a: "C", options: ["Menyontek saat ujian", "Menolak memberi pinjaman alat", "Membantu teman memahami pelajaran"] },
+    { q: "Mengucapkan dzikir dengan hati yang lalai termasuk…", a: "B", options: ["Dzikir yang sempurna", "Dzikir lisan tanpa hati", "Dzikir utama"] },
+    { q: "Saat teman kelompok tidak bisa hadir, kita sebaiknya…", a: "B", options: ["Marah dan memarahinya", "Memaklumi dan membagi tugas dengan adil", "Tidak mengerjakan apapun"] },
+    { q: "Orang yang ikhlas membantu tanpa mengharap imbalan disebut…", a: "A", options: ["Dermawan", "Pembohong", "Pemimpin"] }
+  ];
+
+  const home = document.getElementById("home");
+  const startBtn = document.getElementById("startBtn");
+  const playerNameInput = document.getElementById("playerName");
+  const leaderboardBtn = document.getElementById("leaderboardBtn");
+  const leaderboardList = document.getElementById("leaderboardList");
+
+  const quiz = document.getElementById("quiz");
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const timerEl = document.getElementById("timer");
+  const scorePerQuestionEl = document.getElementById("scorePerQuestion");
+  const result = document.getElementById("result");
+
+  let playerName = "";
+  let score = 0;
+  let currentQuestion = 0;
+  let timer;
+  let timeLeft = 30;
+  let questionsPool = [];
+
+  const correctSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+  const wrongSound = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg');
+
+  playerNameInput.addEventListener("input", () => {
+    startBtn.disabled = playerNameInput.value.trim() === "";
+  });
+
+  function shuffle(array) {
+    for(let i = array.length -1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+  
+  startBtn.onclick = () => {
+    playerName = playerNameInput.value.trim();
+    score = 0;
+    currentQuestion = 0;
+    questionsPool = shuffle([...questions]);
+    home.style.display = "none";
+    leaderboardList.style.display = "none";
+    quiz.style.display = "block";
+    result.style.display = "none";
+    scorePerQuestionEl.textContent = "";
+    nextQuestion();
+  };
+
+  leaderboardBtn.onclick = () => {
+    showLeaderboard();
+    leaderboardList.style.display = leaderboardList.style.display === "none" ? "block" : "none";
+  };
+
+  function nextQuestion() {
+    optionsEl.innerHTML = "";
+    scorePerQuestionEl.textContent = "";
+    timerEl.classList.remove("blink");
+    timeLeft = 30;
+    timerEl.textContent = timeLeft;
+
+    if(currentQuestion >= questionsPool.length) {
+      endQuiz();
+      return;
+    }
+
+    const q = questionsPool[currentQuestion];
+    questionEl.textContent = `Pertanyaan ${currentQuestion + 1}: ${q.q}`;
+    ['A', 'B', 'C'].forEach((label, idx) => {
+      const opt = document.createElement('div');
+      opt.className = 'option';
+      opt.textContent = `${label}. ${q.options[idx]}`;
+      opt.dataset.label = label;
+      opt.onclick = () => selectAnswer(label);
+      optionsEl.appendChild(opt);
+    });
+
+    startTimer();
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = timeLeft;
+      if(timeLeft <= 5) {
+        timerEl.classList.add("blink");
+      } else {
+        timerEl.classList.remove("blink");
+      }
+      if(timeLeft <= 0) {
+        clearInterval(timer);
+        selectAnswer(null); // timeout = salah
+      }
+    }, 1000);
+  }
+
+  function selectAnswer(selected) {
+    clearInterval(timer);
+    const q = questionsPool[currentQuestion];
+    const correct = q.a;
+    const optionsDivs = optionsEl.querySelectorAll('.option');
+
+    // Disable all options after answer
+    optionsDivs.forEach(opt => opt.classList.add('disabled'));
+
+    let deltaScore = 0;
+
+    if(selected === correct) {
+      deltaScore = 5;
+      correctSound.play();
+    } else {
+      deltaScore = 0;
+      wrongSound.play();
+    }
+    score += deltaScore;
+
+    // Highlight correct and wrong
+    optionsDivs.forEach(opt => {
+      if(opt.dataset.label === correct) {
+        opt.style.backgroundColor = '#9AE6B4'; // hijau muda
+      } else if(opt.dataset.label === selected) {
+        opt.style.backgroundColor = '#FEB2B2'; // merah muda
+      }
+    });
+
+    // Tampilkan skor per soal
+    scorePerQuestionEl.textContent = (deltaScore > 0 ? `+${deltaScore}` : deltaScore) + " poin";
+
+    // Tampilkan skor total di bawah soal juga
+    setTimeout(() => {
+      currentQuestion++;
+      nextQuestion();
+    }, 2000);
+  }
+
+  function endQuiz() {
+    quiz.style.display = "none";
+    scorePerQuestionEl.textContent = "";
+    let colorClass = '';
+    let motivationText = '';
+    if(score >= 80) {
+      colorClass = 'green';
+      motivationText = 'Luar biasa! Teruskan semangat belajarmu!';
+    } else if(score >= 55) {
+      colorClass = 'yellow';
+      motivationText = 'Bagus! Sedikit lagi kamu bisa lebih hebat!';
+    } else {
+      colorClass = 'red';
+      motivationText = 'Jangan menyerah! Belajar adalah proses.';
+    }
+
+    result.innerHTML = `
+      <h2>Hasil Quiz</h2>
+      <p>Nama: <strong>${playerName}</strong></p>
+      <p>Skor Akhir: <strong class="${colorClass}">${score}</strong></p>
+      <p style="text-align:center; font-style:italic; margin: 10px 0;">${motivationText}</p>
+      <button id="retryBtn">Main Lagi</button>
+      <button id="toHomeBtn">Kembali ke Beranda</button>
+    `;
+    result.style.display = "block";
+
+    saveScore(playerName, score);
+
+    document.getElementById('retryBtn').onclick = () => {
+      result.style.display = "none";
+      score = 0;
+      currentQuestion = 0;
+      questionsPool = shuffle([...questions]);
+      quiz.style.display = "block";
+      nextQuestion();
+    };
+    document.getElementById('toHomeBtn').onclick = () => {
+      result.style.display = "none";
+      home.style.display = "block";
+      playerNameInput.value = "";
+      startBtn.disabled = true;
+    };
+  }
+
+  function saveScore(name, score) {
+    if (!name) return;
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    leaderboard.push({ name, score });
+    leaderboard.sort((a,b) => b.score - a.score);
+    if(leaderboard.length > 5) leaderboard.length = 5;
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+  }
+
+  function showLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    leaderboardList.innerHTML = '';
+    if(leaderboard.length === 0) {
+      leaderboardList.innerHTML = '<li>Belum ada skor tersimpan.</li>';
+      return;
+    }
+    leaderboard.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.name} - ${item.score} poin`;
+      leaderboardList.appendChild(li);
+    });
+  }
+</script>
+</body>
+</html>
